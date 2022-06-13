@@ -34,4 +34,18 @@ def print_config_file():
             <!-- Firefox -->
         </browser>
     </set_browser>
+    <logout>
+    <!-- True: Logout on Keyboard Interrupt -->
+    <!-- False: Close application -->
+    True
+    </logout>
+    <ghost>
+    <!-- True: Open in Headless mode, browser window will not be visible -->
+    <!-- False: Open browser in head mode, browser window will be visible -->
+    True
+    </ghost>
+    <open_application>
+    <!-- Enter complete path to executable file for launching-->
+    False
+    </open_application>
 </options>""", file=file)
