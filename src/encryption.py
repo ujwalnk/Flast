@@ -1,16 +1,25 @@
+import logging
 from cryptography.fernet import Fernet
 
 def encrypt(s):
-    # try:
-    generate_key()
-    fernet = get_fernet()
-    shadow_file = open(".shadow", "w")
-    print(fernet.encrypt(s).decode(), file=shadow_file)
-    print("Credentials stored securely")
-    return True
-    # except Error:
-    # print("Error Encountered...")
-    # return False
+    try:
+        # Generate key
+        generate_key()
+        fernet = get_fernet()
+
+        # Write the key to a file
+        shadow_file = open(".shadow", "w")
+        print(fernet.encrypt(s).decode(), file=shadow_file)
+
+        print("Credentials stored securely")
+        return True
+
+    except Exception as e:
+        # Write the exception to log file
+        print("Error Encountered...")
+        logging.exception(e)
+        
+        return False
 
 def generate_key():
     # Key Generation
@@ -39,8 +48,3 @@ def decrypt():
     shadow_file = open(".shadow", "r")
     shadow_text = shadow_file.read()
     return fernet.decrypt(shadow_text.encode()).decode()
-
-
-
-
-
