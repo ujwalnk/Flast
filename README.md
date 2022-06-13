@@ -1,6 +1,8 @@
 # AutoICP
 Simple Python Automation to automate logging into PESU Internet Portal
 
+# Brought to you by [Madilu Innovation Hub](https://madilu.in/)
+
 # Minimum Requirements
 1. Python 3.xx
 2. Browser (Chrome, Firefox)
@@ -29,6 +31,13 @@ Simple Python Automation to automate logging into PESU Internet Portal
     - Uncomment the preffered browser 
     - Must be connected to the interent the first time to download the driver
     - Will use the downloaded driver in the consequitve runs
+  - `open_application`: 
+    - `false`: Donot open any application on succesful login
+    - `<path/to/executable>`: Run app(s) on succesful login / internet available (already)
+      - Can add multiple entries delemeted by new line
+  - `ghost`:
+    - `true`: Automate in headless mode, no GUI window (might be faster)
+    - `false`: Automate in head mode, will open browser (might be slower)
 
 # Downloading the driver
 | Browser | Driver Link |
