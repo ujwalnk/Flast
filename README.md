@@ -1,4 +1,4 @@
-# AutoICP
+# AutoINet
 Simple Python Automation to automate logging into PESU Internet Portal
 
 # Brought to you by [Madilu Innovation Hub](https://madilu.in/)
