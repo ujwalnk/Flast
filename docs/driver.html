@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="./res/icon.png" type="image/icon type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/faq.css" />
+    <link rel="stylesheet" href="./styles/nav.css" />
+    <title>AutoINet | Driver</title>
+</head>
+
+<body style="background-color:  rgb(0, 126, 243);">
+    <div>
+        <div class="topnav">
+            <a href="./index.html#main">AutoINet</a>
+            <a class="nav--right" href="https://github.com/ujwalnk/AutoINet/releases">Relases</a>
+            <a class="nav--right" href="./index.html#downloads">Downloads</a>
+            <a class="nav--right" href="./driver.html">Get Driver</a>
+            <a class="nav--right" href="https://github.com/ujwalnk/AutoINet/blob/main/README.md">Help</a>
+            <a class="nav--right" href="./faq.html">FAQ</a>
+        </div>
+        <section>
+            <h1>AutoINet | Driver</h1>
+        </section>
+        <section>
+            <h2>Selenium Driver Download</h2>
+            <button class="body__main--button" style="width: fit-content" id="download-driver" onclick="openDownloadPage()">
+                Driver Download Page
+            </button>
+            <br /><br />
+            <script>
+                var nVer = navigator.appVersion;
+                var nAgt = navigator.userAgent;
+                var browserName = navigator.appName;
+                var fullVersion = "" + parseFloat(navigator.appVersion);
+                var majorVersion = parseInt(navigator.appVersion, 10);
+                var nameOffset, verOffset, ix;
+
+                // In Opera, the true version is after "Opera" or after "Version"
+                if ((verOffset = nAgt.indexOf("Opera")) != -1) {
+                    browserName = "Opera";
+                    fullVersion = nAgt.substring(verOffset + 6);
+                    if ((verOffset = nAgt.indexOf("Version")) != -1)
+                        fullVersion = nAgt.substring(verOffset + 8);
+                }
+                // In MSIE, the true version is after "MSIE" in userAgent
+                else if ((verOffset = nAgt.indexOf("MSIE")) != -1) {
+                    browserName = "Microsoft Internet Explorer";
+                    fullVersion = nAgt.substring(verOffset + 5);
+                }
+                // In Chrome, the true version is after "Chrome"
+                else if ((verOffset = nAgt.indexOf("Chrome")) != -1) {
+                    browserName = "Chrome";
+                    fullVersion = nAgt.substring(verOffset + 7);
+                }
+                // In Safari, the true version is after "Safari" or after "Version"
+                else if ((verOffset = nAgt.indexOf("Safari")) != -1) {
+                    browserName = "Safari";
+                    fullVersion = nAgt.substring(verOffset + 7);
+                    if ((verOffset = nAgt.indexOf("Version")) != -1)
+                        fullVersion = nAgt.substring(verOffset + 8);
+                }
+                // In Firefox, the true version is after "Firefox"
+                else if ((verOffset = nAgt.indexOf("Firefox")) != -1) {
+                    browserName = "Firefox";
+                    fullVersion = nAgt.substring(verOffset + 8);
+                }
+                // In most other browsers, "name/version" is at the end of userAgent
+                else if (
+                    (nameOffset = nAgt.lastIndexOf(" ") + 1) <
+                    (verOffset = nAgt.lastIndexOf("/"))
+                ) {
+                    browserName = nAgt.substring(nameOffset, verOffset);
+                    fullVersion = nAgt.substring(verOffset + 1);
+                    if (browserName.toLowerCase() == browserName.toUpperCase()) {
+                        browserName = navigator.appName;
+                    }
+                }
+                // trim the fullVersion string at semicolon/space if present
+                if ((ix = fullVersion.indexOf(";")) != -1)
+                    fullVersion = fullVersion.substring(0, ix);
+                if ((ix = fullVersion.indexOf(" ")) != -1)
+                    fullVersion = fullVersion.substring(0, ix);
+
+                majorVersion = parseInt("" + fullVersion, 10);
+                if (isNaN(majorVersion)) {
+                    fullVersion = "" + parseFloat(navigator.appVersion);
+                    majorVersion = parseInt(navigator.appVersion, 10);
+                }
+
+                console.log(
+                    "" +
+                    "Browser name = " +
+                    browserName +
+                    "\n" + 
+                    "Full version = " +
+                    fullVersion +
+                    "\n" + 
+                    "Major version = " +
+                    majorVersion +
+                    "\n" + 
+                    "navigator.appName = " +
+                    navigator.appName +
+                    "\n" + 
+                    "navigator.userAgent = " +
+                    navigator.userAgent
+                );
+
+
+
+                function openDownloadPage() {
+                    if (browserName == "Firefox") {
+                        window.alert("Download the latest version for your operating system")
+                        window.open('https://github.com/mozilla/geckodriver/releases/latest');
+                    }
+                    if (browserName == "Edge") {
+                        window.alert("Download the version " + majorVersion + " driver for your operating system")
+                        window.open('https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/');
+                    }
+                    if (browserName == "Chrome") {
+                        window.alert("Download the version " + majorVersion)
+                        window.open('https://chromedriver.chromium.org/downloads');
+                    }
+                }
+            </script>
+        </section>
+    </div>
+</body>
+
+</html>
