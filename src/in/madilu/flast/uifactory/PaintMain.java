@@ -17,11 +17,14 @@ import javax.imageio.ImageIO;
 import javax.net.ssl.SSLHandshakeException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
 
+import in.madilu.flast.sentinel.KeySentinel;
 import in.madilu.flast.sentinel.NetSentinel;
 import in.madilu.flast.sentinel.Supplement;
 
@@ -51,28 +54,35 @@ public class PaintMain {
         connectBtn = Tailor.tailorButton("Connect", "#4aaa4a", 134, 48, 450, 40, panel);
         connectBtn.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
         connectBtn.addActionListener(e -> {
-            changeStatusImg(IMG_PROCESSING);
-            try {
-                LOG.finest("Connection Status:" + String.valueOf(NetSentinel.testConnection()));
-                if (!NetSentinel.testConnection()) {
-                    if (NetSentinel.connect()) {
+            if (NetSentinel.isWiFiConnected()) {
+                changeStatusImg(IMG_PROCESSING);
+                try {
+                    LOG.finest("Connection Status:" + String.valueOf(NetSentinel.testConnection()));
+                    if (!NetSentinel.testConnection()) {
+                        if (NetSentinel.connect()) {
+                            changeStatusImg(IMG_CONNECTED);
+                            Supplement.openApps();
+                        } else {
+                            changeStatusImg(IMG_FAIL);
+                        }
+                    } else {
                         changeStatusImg(IMG_CONNECTED);
                         Supplement.openApps();
-                    } else {
-                        changeStatusImg(IMG_FAIL);
                     }
-                } else {
-                    changeStatusImg(IMG_CONNECTED);
-                    Supplement.openApps();
+                } catch (SSLHandshakeException ex) {
+                    LOG.warning("Incorrect Credentials");
+                    LOG.finest(ex.toString());
+                    changeStatusImg(IMG_FAIL, "Incorrect Credentials");
+                } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
+                        | NoSuchPaddingException | IOException e1) {
+                    LOG.severe("Unable to Connect");
+                    LOG.finest(e1.toString());
                 }
-            } catch (SSLHandshakeException ex) {
-                LOG.warning("Incorrect Credentials");
-                LOG.finest(ex.toString());
-                changeStatusImg(IMG_FAIL, "Incorrect Credentials");
-            } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
-                    | NoSuchPaddingException | IOException e1) {
-                LOG.severe("Unable to Connect");
-                LOG.finest(e1.toString());
+            } else {
+                JFrame jFrame = new JFrame();
+                JOptionPane.showMessageDialog(jFrame, "Internet Not Available\nCheck your WiFi / Ethernet connection",
+                        "Internet Not Available",
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
         connectBtn.setMnemonic('c');
@@ -81,6 +91,7 @@ public class PaintMain {
         disconnectBtn = Tailor.tailorButton("Disconnect", "#ff4040", 134, 48, 450, 99, panel);
         disconnectBtn.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
         disconnectBtn.addActionListener(e -> {
+            // TODO: Check for connected to WiFi
             changeStatusImg(IMG_PROCESSING);
             try {
                 if (NetSentinel.disconnect()) {
@@ -169,9 +180,10 @@ public class PaintMain {
     }
 
     /**
-     * Change status lable text and image
+     * Change status label text and image
+     * 
      * @param status - Integer Status Number
-     * @param s - Message to be displayed
+     * @param s      - Message to be displayed
      */
     private void changeStatusImg(int status, String s) {
         changeStatusImg(status);
@@ -179,9 +191,9 @@ public class PaintMain {
     }
 
     /**
-     * Change the Status lable text
+     * Change the Status label text
      */
-    public void changeStatusText(String s){
+    public void changeStatusText(String s) {
         statusLabel.setText(s);
     }
 
@@ -190,28 +202,49 @@ public class PaintMain {
      */
     private void startup() {
         changeStatusImg(IMG_PROCESSING);
+
+        // When Credentials not available, open config menu on open
+        KeySentinel keySentinel;
         try {
-            if (!NetSentinel.testConnection()) {
-                if (NetSentinel.connect()) {
-                    changeStatusImg(IMG_CONNECTED);
-                    Supplement.openApps();
-                } else {
-                    changeStatusImg(IMG_FAIL);
-                }
-            } else {
-                changeStatusImg(IMG_CONNECTED);
-                Supplement.openApps();
+            keySentinel = new KeySentinel();
+            keySentinel.getCredentials();
+            if (!keySentinel.isOK() || keySentinel.getPassword().isEmpty() || keySentinel.getUserName().isEmpty()) {
+                // TODO: Config Not openineg
             }
-        } catch (SSLHandshakeException ex) {
-            LOG.warning("Incorrect Credentials");
-            LOG.finest(ex.toString());
-            changeStatusImg(IMG_FAIL, "Incorrect Credentials");
         } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
-                | IOException e1) {
-            LOG.severe("Unable to Connect");
-            LOG.finest(e1.toString());
+                | IOException ignore) {
+            LOG.severe("User credentials missing, Config Menu Open");
         }
 
-        changeButton2Update();
+        if (NetSentinel.isWiFiConnected()) {
+            try {
+                if (!NetSentinel.testConnection()) {
+                    if (NetSentinel.connect()) {
+                        changeStatusImg(IMG_CONNECTED);
+                        Supplement.openApps();
+                    } else {
+                        changeStatusImg(IMG_FAIL);
+                    }
+                } else {
+                    changeStatusImg(IMG_CONNECTED);
+                    Supplement.openApps();
+                }
+            } catch (SSLHandshakeException ex) {
+                LOG.warning("Incorrect Credentials");
+                LOG.finest(ex.toString());
+                changeStatusImg(IMG_FAIL, "Incorrect Credentials");
+            } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
+                    | IOException e1) {
+                LOG.severe("Unable to Connect");
+                LOG.finest(e1.toString());
+            }
+
+            changeButton2Update();
+        } else {
+            JFrame jFrame = new JFrame();
+            JOptionPane.showMessageDialog(jFrame, "Internet Not Available\nCheck your WiFi / Ethernet connection",
+                    "Internet Not Available",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 }

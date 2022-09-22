@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.InvalidKeyException;
@@ -20,6 +21,8 @@ import in.madilu.flast.VersionNumber;
 public class NetSentinel {
     private static boolean isConnected = false;
     private static final Logger LOG = Supplement.readyLogger(Logger.getLogger("in.Madilu.Flast.Sentinel.NetOperator"));
+
+    public static String NOT_SET = "NOT_SET";
 
     private NetSentinel() {
     }
@@ -227,8 +230,11 @@ public class NetSentinel {
 
         try {
             // Open Connection to URL
+            // TODO: Set timeout limit
             URL u = new URL(url);
             URLConnection uConnection = u.openConnection();
+            uConnection.setReadTimeout(5000);
+            uConnection.setConnectTimeout(5000);
 
             // Read data from Connection into String
             BufferedReader reader = new BufferedReader(new InputStreamReader(uConnection.getInputStream()));
@@ -257,7 +263,7 @@ public class NetSentinel {
     public static boolean check4Updates() {
         String latestVersionNumber = NetSentinel.getLatestVersion();
         try {
-            if (!latestVersionNumber.equals(VersionNumber.VERSION)) {
+            if (!latestVersionNumber.equals(VersionNumber.VERSION) && !latestVersionNumber.isEmpty()) {
                 LOG.info(() -> String.format("App Update Available %s to %s", VersionNumber.VERSION,
                         latestVersionNumber));
                 return true;
@@ -268,4 +274,44 @@ public class NetSentinel {
         return false;
     }
 
+    /**
+     * Check if Device is connected over WiFi or Ethernet
+     * @return
+     */
+    public static boolean isWiFiConnected() {
+        try {
+            if(System.getProperty("os.name").toLowerCase().contains("win")){
+                if(getConnectedSSID().equals(NOT_SET)){
+                    return false;
+                }
+                return true;
+            }
+            NetworkInterface.getByIndex(3).getName();
+            return true;
+        } catch (Exception networkNotFoundException) {
+            LOG.warning(networkNotFoundException.toString());
+            return false;
+        }
+    }
+
+    private  static String getConnectedSSID(){
+        String ssid = NOT_SET;
+        try {
+            ProcessBuilder builder = new ProcessBuilder(
+                    "cmd.exe", "/c", "netsh wlan show interfaces");
+            builder.redirectErrorStream(true);
+            Process p = builder.start();
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = r.readLine())!=null) {
+                if (line.contains("SSID")){
+                    ssid = line.split("\\s+")[3];
+                    return ssid;
+                }
+            }
+        } catch (IOException ex) {
+            LOG.warning(ex.toString());
+        }
+        return ssid;
+    }
 }

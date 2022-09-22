@@ -117,8 +117,12 @@ public class KeySentinel {
                 new FileInputStream(SECRET_FILE_PATH), credStream);
 
         final String CRED_STRING = credStream.toString();
-        userName = CRED_STRING.substring(0, CRED_STRING.indexOf(","));
-        password = CRED_STRING.substring(CRED_STRING.indexOf(",") + 1);
+        if (!CRED_STRING.isEmpty()) {
+            userName = CRED_STRING.substring(0, CRED_STRING.indexOf(","));
+            password = CRED_STRING.substring(CRED_STRING.indexOf(",") + 1);
+        } else{
+            LOG.warning("Unable to read secret file, reset credentials in settings menu");
+        }
     }
 
     /**
@@ -226,10 +230,11 @@ public class KeySentinel {
 
     /**
      * Check for Credentials
+     * 
      * @return Credential Available
      */
     public boolean isOK() {
-        return (userName.isEmpty() || password.isEmpty());
+        return !(userName.isEmpty() || password.isEmpty());
     }
 
 }

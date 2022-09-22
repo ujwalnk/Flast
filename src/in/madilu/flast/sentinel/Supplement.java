@@ -38,13 +38,21 @@ public class Supplement {
     public static Logger readyLogger(Logger logger) {
         // Adding FileFormatter
         logger.addHandler(fileHandler);
+
+        // Check if dev file exists for logging all logs
+        File devLogFile = new File("./.dev");
+        if (devLogFile.exists()) {
+            logger.setLevel(Level.FINER);
+        }
+
+        
         fileHandler.setFormatter(formatter);
 
         // Remove Console Handler
         logger.setUseParentHandlers(false);
-        
+
         File f = new File("./.dev");
-        if(f.exists() && !f.isDirectory()) { 
+        if (f.exists() && !f.isDirectory()) {
             logger.setLevel(Level.FINEST);
         }
 
@@ -95,7 +103,7 @@ public class Supplement {
         } catch (IOException e) {
             LOG.warning("Unable to to open apps");
             LOG.finest(e.toString());
-        } catch (StringIndexOutOfBoundsException ignore){
+        } catch (StringIndexOutOfBoundsException ignore) {
             // User has not added any apps to auto start, Ignore Exception
         }
     }
