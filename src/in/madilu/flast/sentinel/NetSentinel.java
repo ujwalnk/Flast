@@ -18,6 +18,14 @@ import javax.net.ssl.SSLHandshakeException;
 
 import in.madilu.flast.VersionNumber;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
+
 public class NetSentinel {
     private static boolean isConnected = false;
     private static final Logger LOG = Supplement.readyLogger(Logger.getLogger("in.Madilu.Flast.Sentinel.NetOperator"));
@@ -59,10 +67,18 @@ public class NetSentinel {
 
         if (keySentinel.isOK()) {
             try {
+                System.out.println("mode=191&username=" + keySentinel.getUserName()
+                        + "&password=" + keySentinel.getPassword()
+                        + "&a=" + String.valueOf(System.currentTimeMillis()) + "&producttype=0");
+                System.out.println(sendRequest(getWalledGarden() + "login.xml",
+                        ("mode=191&username=" + keySentinel.getUserName()
+                                + "&password=" + keySentinel.getPassword()
+                                + "&a=" + String.valueOf(System.currentTimeMillis()) + "&producttype=0")));
                 // Check Server Response
+                //
                 if (sendRequest(getWalledGarden() + "login.xml", ("mode=191&username=" + keySentinel.getUserName()
                         + "&password=" + keySentinel.getPassword()
-                        + "&a=" + String.valueOf(System.currentTimeMillis()))).indexOf(
+                        + "&a=" + String.valueOf(System.currentTimeMillis()) + "&producttype=0")).indexOf(
                                 "<?xml version='1.0' ?><requestresponse><status><![CDATA[LIVE]]></status><message><![CDATA[You are signed in as {username}]]></message><logoutmessage><![CDATA[You have successfully logged off]]></logoutmessage><state><![CDATA[]]></state></requestresponse>") != -1) {
                 } else {
                     isConnected = false;
@@ -136,6 +152,35 @@ public class NetSentinel {
 
         // Create a HTTP Connection to URL
         try {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                  // TODO document why this method is empty
+                }
+            }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
             URL postUrl = new URL(url);
 
             HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
@@ -179,6 +224,10 @@ public class NetSentinel {
             LOG.severe("Unable to send Request to Server");
             LOG.finest(e.toString());
             return "";
+        } catch (Exception exception){
+            LOG.severe("Unable to send Request");
+            LOG.finest(exception.toString());
+            return "";
         }
     }
 
@@ -188,7 +237,7 @@ public class NetSentinel {
      * @return String - URL of Walled Garden
      */
     private static String getWalledGarden() {
-        return "http://192.168.254.1:8090/";
+        return "https://192.168.254.1:8090/";
     }
 
     /**
@@ -276,12 +325,13 @@ public class NetSentinel {
 
     /**
      * Check if Device is connected over WiFi or Ethernet
+     * 
      * @return
      */
     public static boolean isWiFiConnected() {
         try {
-            if(System.getProperty("os.name").toLowerCase().contains("win")){
-                if(getConnectedSSID().equals(NOT_SET)){
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                if (getConnectedSSID().equals(NOT_SET)) {
                     return false;
                 }
                 return true;
@@ -294,7 +344,7 @@ public class NetSentinel {
         }
     }
 
-    private  static String getConnectedSSID(){
+    private static String getConnectedSSID() {
         String ssid = NOT_SET;
         try {
             ProcessBuilder builder = new ProcessBuilder(
@@ -303,8 +353,8 @@ public class NetSentinel {
             Process p = builder.start();
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
-            while ((line = r.readLine())!=null) {
-                if (line.contains("SSID")){
+            while ((line = r.readLine()) != null) {
+                if (line.contains("SSID")) {
                     ssid = line.split("\\s+")[3];
                     return ssid;
                 }
