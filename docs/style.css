@@ -38,7 +38,6 @@
 
 .content .container-fluid:nth-child(1){
     height: 90vh;
-
 }
 
 .img-header{
@@ -57,7 +56,7 @@
 
 .img-java{
     background: url(./res/java.png);
-    background-position: left;
+    background-position: right;
     background-repeat: no-repeat;
     background-size: contain;
     height: auto;
@@ -65,15 +64,25 @@
 } 
 .img-flast{
     background: url(./res/thumbs-up.png);
-    background-position: right 5vw center;
+    background-position: left 5vw center;
     background-repeat: no-repeat;
+    /* list-style-position: outside; */
+    direction: rtl;
     background-size: auto;
     width: 100%;
 }
 
 .img-lock{
     background: url(./res/lock.svg);
-    background-position: 5vw;
+    background-position: right 5vw;
+    background-repeat: no-repeat;
+    background-size: auto;
+    width: 100%;
+}
+
+.img-robot{
+    background: url(./res/robot.svg);
+    background-position: right 5vw;
     background-repeat: no-repeat;
     background-size: auto;
     width: 100%;
@@ -81,7 +90,7 @@
 
 .img-noinstall{
     background: url(./res/no-install.svg);
-    background-position: right 5vw center;
+    background-position: left 5vw center;
     background-repeat: no-repeat;
     background-size: auto;
     width: 100%;
@@ -89,14 +98,14 @@
 
 .img-os{
     background: url(./res/open-source.svg);
-    background-position: right 5vw center;
+    background-position: left 5vw center;
     background-repeat: no-repeat;
     background-size: auto;
 }
 
 .img-bg{
     background: url(./res/background.jpg);
-    background-position: right;
+    background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
 }
