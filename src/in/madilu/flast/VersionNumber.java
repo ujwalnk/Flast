@@ -2,7 +2,7 @@ package in.madilu.flast;
 
 public class VersionNumber{
     // App Version Number
-    public static final String VERSION = "b0.2.2";
+    public static final String VERSION = "b0.2.3";
 
     private VersionNumber(){}
 }
