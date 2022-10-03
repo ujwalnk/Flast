@@ -128,7 +128,7 @@ public class PaintMain {
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Credits Button
-        textLabel = Tailor.tailorLabel("brought to you from MADILU", 620, 20, 0, 350, panel);
+        textLabel = Tailor.tailorLabel("brought to you by MADILU", 620, 20, 0, 350, panel);
         textLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         textLabel.setForeground(Color.BLUE);
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
