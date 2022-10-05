@@ -8,10 +8,12 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
+    integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
   <link rel="shortcut icon" href="./res/icon.png" type="image/x-icon">
 </head>
 
-<body>
+<body onload="scroll()">
   <nav class="navbar navbar-expand-lg bg-light fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#"><img src="./res/icon.png" height="25px">
@@ -53,7 +55,7 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid img-robot">
+    <div class="container-fluid img-robot" id="section1">
       <h1>Connect Easy</h1>
       <p>
         Experience Hassle-free connections to the internet, every time. <br/> 
@@ -122,6 +124,12 @@
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
     })
+
+    async function scroll() {
+      document.getElementById('section1').scrollIntoView();
+      await new Promise(resolve => setTimeout(resolve, 800)); // wait
+      document.getElementById('home').scrollIntoView();
+    }
   </script>
 </body>
 
