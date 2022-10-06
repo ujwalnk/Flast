@@ -54,6 +54,7 @@ public class PaintMain {
         connectBtn = Tailor.tailorButton("Connect", "#4aaa4a", 134, 48, 450, 40, panel);
         connectBtn.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
         connectBtn.addActionListener(e -> {
+            // TODO: Change this
             if (NetSentinel.isWiFiConnected()) {
                 changeStatusImg(IMG_PROCESSING);
                 try {
@@ -79,10 +80,46 @@ public class PaintMain {
                     LOG.finest(e1.toString());
                 }
             } else {
-                JFrame jFrame = new JFrame();
-                JOptionPane.showMessageDialog(jFrame, "Internet Not Available\nCheck your WiFi / Ethernet connection",
-                        "Internet Not Available",
-                        JOptionPane.WARNING_MESSAGE);
+                String[] buttons = { "Check Again", "Ignore", "Ignore Forever" };
+                int rc = JOptionPane.showOptionDialog(null,
+                        "Internet Not Available \nCheck your WiFi / Ethernet Connection", "Internet not Available",
+                        JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[2]);
+                // On ignore Option, re run the connect process
+                if (rc == 1 || rc == 2) {
+                    changeStatusImg(IMG_PROCESSING);
+                    try {
+                        LOG.finest("Connection Status:" + String.valueOf(NetSentinel.testConnection()));
+                        if (!NetSentinel.testConnection()) {
+                            if (NetSentinel.connect()) {
+                                changeStatusImg(IMG_CONNECTED);
+                                Supplement.openApps();
+                            } else {
+                                changeStatusImg(IMG_FAIL);
+                            }
+                        } else {
+                            changeStatusImg(IMG_CONNECTED);
+                            Supplement.openApps();
+                        }
+                    } catch (SSLHandshakeException ex) {
+                        LOG.warning("Incorrect Credentials");
+                        LOG.finest(ex.toString());
+                        changeStatusImg(IMG_FAIL, "Incorrect Credentials");
+                    } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
+                            | NoSuchPaddingException | IOException e1) {
+                        LOG.severe("Unable to Connect");
+                        LOG.finest(e1.toString());
+                    }
+                }
+
+                // Create IgnoreAlwaysFile to ignore WiFi Connection Always
+                if (rc == 2) {
+                    try{
+                        LOG.info("Ignore Always Enabled: " + String.valueOf(new File("./.ignore").createNewFile()));
+                    } catch (NullPointerException | IOException | SecurityException e1){
+                        LOG.severe("Unable to create ignore File");
+                        LOG.finest(e1.toString());
+                    }
+                }
             }
         });
         connectBtn.setMnemonic('c');
@@ -241,10 +278,46 @@ public class PaintMain {
 
             changeButton2Update();
         } else {
-            JFrame jFrame = new JFrame();
-            JOptionPane.showMessageDialog(jFrame, "Internet Not Available\nCheck your WiFi / Ethernet connection",
-                    "Internet Not Available",
-                    JOptionPane.WARNING_MESSAGE);
+            String[] buttons = { "Check Again", "Ignore", "Ignore Forever" };
+            int rc = JOptionPane.showOptionDialog(null,
+                    "Internet Not Available \nCheck your WiFi / Ethernet Connection", "Internet not Available",
+                    JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[2]);
+            // On ignore Option, re run the connect process
+            if (rc == 1 || rc == 2) {
+                try {
+                    if (!NetSentinel.testConnection()) {
+                        if (NetSentinel.connect()) {
+                            changeStatusImg(IMG_CONNECTED);
+                            Supplement.openApps();
+                        } else {
+                            changeStatusImg(IMG_FAIL);
+                        }
+                    } else {
+                        changeStatusImg(IMG_CONNECTED);
+                        Supplement.openApps();
+                    }
+                } catch (SSLHandshakeException ex) {
+                    LOG.warning("Incorrect Credentials");
+                    LOG.finest(ex.toString());
+                    changeStatusImg(IMG_FAIL, "Incorrect Credentials");
+                } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
+                        | NoSuchPaddingException
+                        | IOException e1) {
+                    LOG.severe("Unable to Connect");
+                    LOG.finest(e1.toString());
+                }
+
+                changeButton2Update();
+            }
+            if (rc == 2) {
+                // Create IgnoreAlwaysFile to ignore WiFi Connection Always
+                try{
+                LOG.info("Ignore Always Enabled: " + String.valueOf(new File("./.ignore").createNewFile()));
+            } catch (NullPointerException | IOException | SecurityException e){
+                LOG.severe("Unable to create ignore File");
+                LOG.finest(e.toString());
+            }
+            }
         }
     }
 }

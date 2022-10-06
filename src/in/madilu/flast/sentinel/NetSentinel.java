@@ -1,6 +1,7 @@
 package in.madilu.flast.sentinel;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -67,13 +68,6 @@ public class NetSentinel {
 
         if (keySentinel.isOK()) {
             try {
-                System.out.println("mode=191&username=" + keySentinel.getUserName()
-                        + "&password=" + keySentinel.getPassword()
-                        + "&a=" + String.valueOf(System.currentTimeMillis()) + "&producttype=0");
-                System.out.println(sendRequest(getWalledGarden() + "login.xml",
-                        ("mode=191&username=" + keySentinel.getUserName()
-                                + "&password=" + keySentinel.getPassword()
-                                + "&a=" + String.valueOf(System.currentTimeMillis()) + "&producttype=0")));
                 // Check Server Response
                 //
                 if (sendRequest(getWalledGarden() + "login.xml", ("mode=191&username=" + keySentinel.getUserName()
@@ -329,6 +323,13 @@ public class NetSentinel {
      * @return
      */
     public static boolean isWiFiConnected() {
+        // On IgnoreAlwyas Options return true by default
+        File ignoreConnectionFile = new File("./.ignore");
+        if(ignoreConnectionFile.exists()){
+            return true;
+        }
+
+        // Check for Connection
         try {
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
                 if (getConnectedSSID().equals(NOT_SET)) {

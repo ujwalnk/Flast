@@ -38,13 +38,6 @@ public class Supplement {
     public static Logger readyLogger(Logger logger) {
         // Adding FileFormatter
         logger.addHandler(fileHandler);
-
-        // Check if dev file exists for logging all logs
-        File devLogFile = new File("./.dev");
-        if (devLogFile.exists()) {
-            logger.setLevel(Level.FINER);
-        }
-
         
         fileHandler.setFormatter(formatter);
 
