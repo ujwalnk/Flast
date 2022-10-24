@@ -48,7 +48,7 @@
   </nav>
   <div class="content" id="home">
     <div id="carouselExampleSlidesOnly"
-      class="carousel slide d-flex justify-content-md-center align-items-center vh-100 img-header" data-bs-ride="carousel">
+      class="carousel slide d-flex justify-content-md-center align-items-center img-header" data-bs-ride="carousel">
       <div class="carousel-inner">
         <div class="carousel-item active justify-content-md-center align-items-center">
           <h1>Brought to you by <a href="https://www.madilu.in/">MADILU</a> <br/>Ujwal N K</h1>
@@ -124,12 +124,6 @@
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
     })
-
-    async function scroll() {
-      document.getElementById('section1').scrollIntoView();
-      await new Promise(resolve => setTimeout(resolve, 800)); // wait
-      document.getElementById('home').scrollIntoView();
-    }
   </script>
 </body>
 

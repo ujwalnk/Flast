@@ -48,10 +48,15 @@
     height: auto;
     width: 100%;
     text-align: center;
+    height: 50vh !important;
 }
 
 .content .container-fluid img{
     height: 30vh;
+}
+
+.content .container-fluid{
+    scroll-snap-align: center;
 }
 
 .img-java{
@@ -112,4 +117,8 @@
 
 a{
     text-decoration: none !important;
+}
+
+html{
+    scroll-snap-type: y proximity;
 }
