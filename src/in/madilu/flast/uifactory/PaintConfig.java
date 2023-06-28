@@ -71,7 +71,7 @@ public class PaintConfig extends JFrame implements ActionListener {
 
         // Labels
         Tailor.tailorLabel("UserName", 101, 42, 33, 44, panel);
-        passLabel = Tailor.tailorLabel("Password", 101, 42, 33, 160, panel);
+        passLabel = Tailor.tailorLabel("Password (show)", 140, 42, 33, 160, panel);
         passLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         passLabel.addMouseListener(new MouseInputAdapter() {
             @Override
