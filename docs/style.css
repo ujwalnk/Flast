@@ -52,7 +52,7 @@
 }
 
 .content .container-fluid img{
-    height: 30vh;
+    height: 50vh;
 }
 
 .content .container-fluid{
@@ -60,8 +60,8 @@
 }
 
 .img-java{
-    background: url(./res/java.png);
-    background-position: right;
+    background: url(./res/flutter.png);
+    background-position: left;
     background-repeat: no-repeat;
     background-size: contain;
     height: auto;
