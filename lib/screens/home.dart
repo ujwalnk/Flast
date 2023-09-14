@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
-import 'dart:convert';
-import 'dart:typed_data';
 
 // Services
 import 'package:flast/services/secureStorage.dart';
@@ -17,19 +15,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  static const String connected_string = "Connected!";
+  static const String connecting_string = "Connecting";
+  static const String fail_connect_string = "Sorry! Unable to Connect";
+
+  static const String disconnected_string = "Disconnected!";
+  static const String disconnecting_string = "Disconnecting";
+  static const String fail_disconnect_string = "Sorry! Unable to Disconnect";
+
   bool connectionStatus = false;
-  bool switchState = true;
-  String status = "";
+  bool switchState = false;
+  String status = disconnected_string;
 
   bool _setup = true;
-
-  final String connected_string = "Connected!";
-  final String disconnected_string = "Disconnected!";
-  final String connecting_string = "Connecting";
-  final String disconnecting_string = "Disconnecting";
-
-  final String fail_connect_string = "Sorry! Unable to Connect";
-  final String fail_disconnect_string = "Sorry! Unable to Disconnect";
 
   /// Test the connection of the device by getting data from https://raw.githubusercontent.com/ujwalnk/Flast/main/docs/success.txt
   /// Update the variable connectionStatus based on the connection Status
@@ -86,17 +84,13 @@ class _HomeState extends State<Home> {
     return connectionStatus;
   }
 
-  Future post2({bool connect = true}) async {
+  Future post({bool connect = true}) async {
     SecureStorage ss = SecureStorage();
     try {
-      debugPrint("@post2: Starting");
-      final ioc = new HttpClient();
-      debugPrint("@post2: ioc created");
+      final ioc = HttpClient();
       ioc.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
-      debugPrint("@post2: Call back added");
-      final http = new IOClient(ioc);
-      debugPrint("@post2: IO Client Created");
+      final http = IOClient(ioc);
       http.post(Uri.parse("https://192.168.254.1:8090/login.xml"), body: {
         'mode': connect ? "191" : "193",
         "username": await ss.readSecureData("user"),
@@ -106,18 +100,16 @@ class _HomeState extends State<Home> {
       }).then((response) {
         debugPrint("Reponse status : ${response.statusCode}");
         debugPrint("Response body : ${response.body}");
-        if(response.body.contains("Login failed. You have reached the maximum login limit.")){
-          setState(){
+        if (response.body.contains(
+            "Login failed. You have reached the maximum login limit.")) {
+          setState() {
             status = "Sorry! Maximum Login Limit Reached!";
           }
         }
       });
-      debugPrint("@post2: Post done");
     } catch (e) {
-      // debugPrint("@Post2: Error Encountered");
-      debugPrint("@Post2: Error Encountered: ${e.toString()}");
+      debugPrint("@Post2: Error Encountered: $e");
     }
-    debugPrint("@post2: DONE!!!!!!!!!");
   }
 
   @override
@@ -135,8 +127,23 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Flast"),
+          title: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Flast',
+                style:
+                    TextStyle(fontSize: 24.0), 
+              ),
+              Text(
+                'by Madilu',
+                style: TextStyle(fontSize: 12.0),
+              ),
+            ],
+          ),
           centerTitle: false,
+          automaticallyImplyLeading: false,
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.settings),
@@ -159,10 +166,10 @@ class _HomeState extends State<Home> {
                     switchState = value;
                     if (value == true) {
                       // Login
-                      post2();
+                      post();
                       status = connecting_string;
                     } else {
-                      post2(connect: false);
+                      post(connect: false);
                       status = disconnecting_string;
                     }
 
